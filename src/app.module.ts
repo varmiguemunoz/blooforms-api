@@ -3,14 +3,17 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FormsModule } from './forms/forms.module';
 import { UsersModule } from './users/users.module';
+
 import database from './config/database';
 import app from './config/app';
+import auth from './config/auth';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [database, app],
+      load: [database, app, auth],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
@@ -27,6 +30,7 @@ import app from './config/app';
         migrations: ['dist/migrations/*{.ts,.js}'],
         synchronize: config.get('database.synchronize'),
         migrationsRun: true,
+        logging: true,
         ssl: {
           rejectUnauthorized: config.get('database.ssl.rejectUnauthorized'),
         },
@@ -34,6 +38,7 @@ import app from './config/app';
       inject: [ConfigService],
     }),
     UsersModule,
+    FormsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

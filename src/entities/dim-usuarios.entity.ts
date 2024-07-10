@@ -8,7 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 
-@Entity()
+@Entity('dim_usuarios')
 @Unique('dim_usuarios_email_key', ['email'])
 export class DimUsuarios {
   @Exclude()

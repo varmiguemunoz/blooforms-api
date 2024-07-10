@@ -2,16 +2,17 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToOne,
-  ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  Entity,
+  ManyToMany,
 } from 'typeorm';
 
 import { DimUsuarios } from './dim-usuarios.entity';
 import { FacEspacios } from './fac-espacios.entity';
-
 import { Exclude } from 'class-transformer';
 
+@Entity()
 export class FacUsuarios {
   @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_usuarios_pkey1' })
   id: number;
@@ -28,7 +29,7 @@ export class FacUsuarios {
   @JoinColumn({
     name: 'id_espacio',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_espacio_fkey',
+    foreignKeyConstraintName: 'fac_espacio_fkey1',
   })
   espacio: FacEspacios;
 
