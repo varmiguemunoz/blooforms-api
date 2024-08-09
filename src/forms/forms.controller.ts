@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,14 +9,17 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FormsService } from './forms.service';
 import { FacEspacios } from 'src/entities/fac-espacios.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { DimFormularios } from 'src/entities/dim-formularios.entity';
 
+@ApiBearerAuth()
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('forms')
 @ApiTags('Forms')
 export class FormsController {
