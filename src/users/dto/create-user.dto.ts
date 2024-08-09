@@ -4,29 +4,26 @@ import {
   MinLength,
   IsEmail,
   IsOptional,
-  IsNumber,
-  IsStrongPassword,
+  // IsStrongPassword,
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsOptional()
-  @IsNumber()
-  id_espacio?: number;
-
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
+  @MinLength(8)
   nombre: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
+  @IsString()
+  @MinLength(8)
   password: string;
 
   @IsOptional()
   @IsString()
-  username: string;
+  username?: string;
 }

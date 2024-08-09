@@ -5,12 +5,14 @@ import {
   HttpException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { FacUsuarios } from 'src/entities/fac-usuarios.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -33,7 +35,14 @@ export class UsersController {
   createUser(
     @Body() newUser: CreateUserDto,
   ): Promise<FacUsuarios | HttpException> {
-    const user = this.usersService.create(newUser);
-    return user;
+    return this.usersService.createUser(newUser);
+  }
+
+  @Patch(':id')
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() user: UpdateUserDto,
+  ): Promise<FacUsuarios | HttpException> {
+    return this.usersService.update(id, user);
   }
 }

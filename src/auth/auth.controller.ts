@@ -10,13 +10,14 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin-dto';
 import { SignInResponseDto } from './dto/signin-response-dto';
 import { Public } from './decorators/public.decorator';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import {
   RefreshTokenDto,
   RefreshTokenResponseDto,
 } from './dto/refresh-token.dto';
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

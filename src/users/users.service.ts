@@ -2,9 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { FacUsuarios } from 'src/entities/fac-usuarios.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { DimUsuarios } from 'src/entities/dim-usuarios.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,11 +14,14 @@ export class UsersService {
     @InjectRepository(FacUsuarios)
     private usersRepository: Repository<FacUsuarios>,
     private readonly configService: ConfigService,
+    private readonly dataSource: DataSource,
   ) {}
 
+  //Find all users
   async getUsers() {
-    //El error esta en esta linea
-    const users = await this.usersRepository.find();
+    const users = await this.usersRepository.find({
+      relations: ['usuario'],
+    });
 
     if (!users) {
       throw new HttpException(
@@ -28,10 +33,11 @@ export class UsersService {
     return users;
   }
 
+  // Find Users
   async findOneUser(id: number): Promise<FacUsuarios> {
     const user = await this.usersRepository.findOne({
       where: { id },
-      relations: ['usuario', 'espacio'],
+      relations: ['usuario'],
     });
 
     if (!user) {
@@ -48,7 +54,6 @@ export class UsersService {
   async findOneByEmail(email: string): Promise<FacUsuarios | undefined> {
     const user = await this.usersRepository.findOne({
       where: { usuario: { email } },
-      relations: ['usuario', 'rol', 'area', 'empresa', 'equipo'],
     });
 
     if (!user) {
@@ -73,8 +78,9 @@ export class UsersService {
     return await bcrypt.compare(password, userPassword);
   }
 
-  async create(user: CreateUserDto): Promise<FacUsuarios | HttpException> {
-    const { id_espacio, password, ...userData } = user;
+  // Create Users
+  async createUser(user: CreateUserDto): Promise<FacUsuarios | HttpException> {
+    const { password, ...userData } = user;
 
     const emailTaken = await this.usersRepository.findOne({
       where: { usuario: { email: user.email } },
@@ -94,12 +100,74 @@ export class UsersService {
         password: hashPassword,
       },
       espacio: {
-        id: id_espacio,
+        id: null,
       },
     });
 
-    // this.eventEmitter.emit(EVENT_TYPES.USER_CREATED, newUser);
+    const userSaved = await this.dataSource.transaction(async (manager) => {
+      const user = await manager.save(FacUsuarios, newUser);
 
-    return newUser;
+      return user;
+    });
+
+    return userSaved;
+  }
+
+  //update user service
+  async update(
+    id: number,
+    user: UpdateUserDto,
+  ): Promise<FacUsuarios | HttpException> {
+    const { id_espacio, ...userData } = user;
+
+    const userExists = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['usuario'],
+    });
+
+    if (!userExists)
+      throw new HttpException(
+        'No se encontró el usuario.',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (user.email && user.email !== userExists.usuario.email) {
+      const emailTaken = await this.usersRepository.findOne({
+        where: { usuario: { email: user.email } },
+      });
+
+      if (emailTaken)
+        throw new HttpException(
+          'El correo electrónico ya se encuentra registrado.',
+          HttpStatus.CONFLICT,
+        );
+    }
+
+    if (user.password) {
+      userData.password = await this.hashPassword(user.password);
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(
+        DimUsuarios,
+        { id: userExists.usuario.id },
+        userData,
+      );
+
+      const facUser = {
+        usuario: { id: userExists.usuario.id },
+      };
+
+      if (id_espacio) {
+        facUser['espacio'] = { id: id_espacio };
+      }
+
+      await manager.update(FacUsuarios, { id }, facUser);
+    });
+
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: ['usuario'],
+    });
   }
 }

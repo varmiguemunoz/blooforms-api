@@ -25,6 +25,7 @@ export class FacUsuarios {
   })
   usuario: DimUsuarios;
 
+  //Columna que no esta en la base de datos
   @ManyToMany(() => FacEspacios, { nullable: false, cascade: true })
   @JoinColumn({
     name: 'id_espacio',

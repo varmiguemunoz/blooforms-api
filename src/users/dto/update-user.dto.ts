@@ -9,23 +9,23 @@ import {
 export class UpdateUserDto {
   @IsOptional()
   @IsNumber()
-  id_rol?: number;
+  id_espacio?: number;
 
   @IsOptional()
   @IsString()
   @MinLength(3)
-  nombre: string;
+  nombre?: string;
 
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()
-  username: string;
+  username?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(8)
-  password: string;
+  password?: string;
 }

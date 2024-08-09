@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { FacEspacios } from './fac-espacios.entity';
 
 @Entity()
 export class DimFormularios {
@@ -14,13 +17,18 @@ export class DimFormularios {
   id: number;
 
   @Column({ length: 255 })
-  nombre: string;
-
-  @Column({ length: 255 })
   form_name: string;
 
   @Column({ length: 255 })
   form_value: string;
+
+  @ManyToOne(() => FacEspacios, (facEspacio) => facEspacio.formulario)
+  @JoinColumn({
+    name: 'fac_espacio_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'fac_espacio_fkey',
+  })
+  facEspacio: FacEspacios;
 
   @Exclude()
   @CreateDateColumn()

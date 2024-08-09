@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
-  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
 import { DimFormularios } from './dim-formularios.entity';
@@ -19,13 +19,17 @@ export class FacEspacios {
   @Column()
   titulo: string;
 
-  @ManyToOne(() => DimFormularios, { nullable: false, cascade: true })
+  @OneToMany(
+    () => DimFormularios,
+    (dimFormulario) => dimFormulario.facEspacio,
+    { cascade: true },
+  )
   @JoinColumn({
     name: 'dim_formularios',
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'dim_formularios_fkey',
   })
-  formulario: DimFormularios;
+  formulario: DimFormularios[];
 
   @Exclude()
   @CreateDateColumn()
