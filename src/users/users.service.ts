@@ -3,16 +3,16 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { FacUsuarios } from 'src/entities/fac-usuarios.entity';
+import { FacUsers } from 'src/entities/fac-users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DimUsuarios } from 'src/entities/dim-usuarios.entity';
+import { DimUsuarios } from 'src/entities/users.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(FacUsuarios)
-    private usersRepository: Repository<FacUsuarios>,
+    @InjectRepository(FacUsers)
+    private usersRepository: Repository<FacUsers>,
     private readonly configService: ConfigService,
     private readonly dataSource: DataSource,
   ) {}
@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   // Find Users
-  async findOneUser(id: number): Promise<FacUsuarios> {
+  async findOneUser(id: number): Promise<FacUsers> {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: ['usuario'],
@@ -51,7 +51,7 @@ export class UsersService {
   }
 
   // find users by email
-  async findOneByEmail(email: string): Promise<FacUsuarios | undefined> {
+  async findOneByEmail(email: string): Promise<FacUsers | undefined> {
     const user = await this.usersRepository.findOne({
       where: { usuario: { email } },
       relations: ['usuario'],
@@ -80,7 +80,7 @@ export class UsersService {
   }
 
   // Create Users
-  async createUser(user: CreateUserDto): Promise<FacUsuarios | HttpException> {
+  async createUser(user: CreateUserDto): Promise<FacUsers | HttpException> {
     const { password, ...userData } = user;
 
     const emailTaken = await this.usersRepository.findOne({
@@ -100,13 +100,16 @@ export class UsersService {
         ...userData,
         password: hashPassword,
       },
+      role: {
+        id: null,
+      },
       espacio: {
         id: null,
       },
     });
 
     const userSaved = await this.dataSource.transaction(async (manager) => {
-      const user = await manager.save(FacUsuarios, newUser);
+      const user = await manager.save(FacUsers, newUser);
 
       return user;
     });
@@ -118,7 +121,7 @@ export class UsersService {
   async update(
     id: number,
     user: UpdateUserDto,
-  ): Promise<FacUsuarios | HttpException> {
+  ): Promise<FacUsers | HttpException> {
     const { id_espacio, ...userData } = user;
 
     const userExists = await this.usersRepository.findOne({
@@ -163,7 +166,7 @@ export class UsersService {
         facUser['espacio'] = { id: id_espacio };
       }
 
-      await manager.update(FacUsuarios, { id }, facUser);
+      await manager.update(FacUsers, { id }, facUser);
     });
 
     return this.usersRepository.findOne({

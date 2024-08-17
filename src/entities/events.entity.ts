@@ -8,12 +8,12 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { FacEspacios } from './fac-espacios.entity';
+import { FacSpaces } from './fac-spaces.entity';
 
 @Entity()
-export class DimFormularios {
+export class Events {
   @Exclude()
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_formularios_pkey' })
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_events_pkey' })
   id: number;
 
   @Column({ length: 255 })
@@ -22,13 +22,13 @@ export class DimFormularios {
   @Column({ length: 255 })
   form_value: string;
 
-  @ManyToOne(() => FacEspacios, (facEspacio) => facEspacio.formulario)
+  @ManyToOne(() => FacSpaces, (formulario) => formulario.formulario)
   @JoinColumn({
-    name: 'fac_espacio_id',
+    name: 'id_spaces',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_espacio_fkey',
+    foreignKeyConstraintName: 'id_spaces_fkey',
   })
-  facEspacio: FacEspacios;
+  formulario: FacSpaces;
 
   @Exclude()
   @CreateDateColumn()
@@ -38,7 +38,7 @@ export class DimFormularios {
   @UpdateDateColumn()
   updated_at: Date;
 
-  constructor(partial: Partial<DimFormularios>) {
+  constructor(partial: Partial<Events>) {
     Object.assign(this, partial);
   }
 }

@@ -5,15 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Entity,
-  ManyToMany,
 } from 'typeorm';
 
-import { DimUsuarios } from './dim-usuarios.entity';
-import { FacEspacios } from './fac-espacios.entity';
+import { DimUsuarios } from './users.entity';
 import { Exclude } from 'class-transformer';
+import { Roles } from './roles.entity';
 
 @Entity()
-export class FacUsuarios {
+export class FacUsers {
   @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_usuarios_pkey1' })
   id: number;
 
@@ -25,14 +24,13 @@ export class FacUsuarios {
   })
   usuario: DimUsuarios;
 
-  //Columna que no esta en la base de datos
-  @ManyToMany(() => FacEspacios, { nullable: false, cascade: true })
+  @OneToOne(() => Roles, { nullable: false, cascade: true })
   @JoinColumn({
-    name: 'id_espacio',
+    name: 'id_rol',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_espacio_fkey1',
+    foreignKeyConstraintName: 'fac_usuarios_id_rol_fkey',
   })
-  espacio: FacEspacios;
+  role: Roles;
 
   @Exclude()
   @CreateDateColumn()

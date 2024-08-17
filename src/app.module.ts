@@ -34,9 +34,7 @@ import auth from './config/auth';
         synchronize: config.get('database.synchronize'),
         migrationsRun: true,
         logging: true,
-        ssl: {
-          rejectUnauthorized: config.get('database.ssl.rejectUnauthorized'),
-        },
+        ssl: false,
       }),
       inject: [ConfigService],
     }),

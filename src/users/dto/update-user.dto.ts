@@ -12,6 +12,10 @@ export class UpdateUserDto {
   id_espacio?: number;
 
   @IsOptional()
+  @IsNumber()
+  id_role?: number;
+
+  @IsOptional()
   @IsString()
   @MinLength(3)
   nombre?: string;

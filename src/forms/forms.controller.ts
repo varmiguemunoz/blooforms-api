@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FormsService } from './forms.service';
-import { FacEspacios } from 'src/entities/fac-espacios.entity';
+import { FacEspacios } from 'src/entities/fac-espaces.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { DimFormularios } from 'src/entities/dim-formularios.entity';

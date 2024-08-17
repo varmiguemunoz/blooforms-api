@@ -2,14 +2,110 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class facUsuariosFix1720632462069 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`CREATE TABLE IF NOT EXISTS fac_usuarios (
-    id SERIAL PRIMARY KEY,
-    id_usuario INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fac_usuarios_pkey1 PRIMARY KEY (id),
-    CONSTRAINT fac_usuarios_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES dim_usuarios(id)
-);`);
+    await queryRunner.query(`
+CREATE TABLE spaces (
+  id bigint primary key generated always as identity,
+  name text not null,
+  created_at timestamp with time zone default now()
+);
+
+CREATE TABLE events (
+  id bigint primary key generated always as identity,
+  space_id bigint references spaces (id),
+  event_type text not null,
+  event_data jsonb,
+  created_at timestamp with time zone default now()
+);
+
+CREATE TABLE customers (
+  id bigint primary key generated always as identity,
+  space_id bigint references spaces (id),
+  name text not null,
+  email text unique not null,
+  phone text,
+  created_at timestamp with time zone default now()
+);
+
+CREATE TABLE users (
+  id bigint primary key generated always as identity,
+  username text unique not null,
+  email text unique not null,
+  password_hash text not null,
+  created_at timestamp with time zone default now(),
+  last_login timestamp with time zone
+);
+
+alter table spaces
+add column user_id bigint unique references users (id);
+
+create type user_role as enum('admin', 'client');
+
+alter table users
+add column role user_role not null default 'client';
+
+alter table users
+drop role;
+
+CREATE TABLE roles (
+  id bigint primary key generated always as identity,
+  name text unique not null
+);
+
+CREATE TABLE fac_user_roles (
+  id bigint primary key generated always as identity,
+  user_id bigint references users (id),
+  role_id bigint references roles (id),
+  assigned_at timestamp with time zone default now()
+);
+
+alter table events
+drop space_id;
+
+alter table customers
+drop space_id;
+
+CREATE TABLE space_types (
+  id bigint primary key generated always as identity,
+  name text unique not null
+);
+
+CREATE TABLE fac_spaces (
+  id bigint primary key generated always as identity,
+  user_id bigint unique references users (id),
+  space_type_id bigint references space_types (id),
+  name text not null,
+  created_at timestamp with time zone default now()
+);
+
+drop table spaces;
+
+alter table events
+add column space_id bigint references fac_spaces (id);
+
+alter table customers
+add column space_id bigint references fac_spaces (id);
+
+CREATE TABLE payment_types (
+  id bigint primary key generated always as identity,
+  name text unique not null
+);
+
+CREATE TABLE payment_statuses (
+  id bigint primary key generated always as identity,
+  name text unique not null
+);
+
+CREATE TABLE fac_payments (
+  id bigint primary key generated always as identity,
+  user_id bigint references users (id),
+  payment_type_id bigint references payment_types (id),
+  payment_status_id bigint references payment_statuses (id),
+  amount numeric(10, 2) not null,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone
+);
+
+`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

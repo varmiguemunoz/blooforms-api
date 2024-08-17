@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { FacUsuarios } from 'src/entities/fac-usuarios.entity';
+import { FacUsers } from 'src/entities/fac-users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -31,14 +31,14 @@ export class UsersController {
   @Get(':id')
   findOneUser(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<FacUsuarios> | HttpException {
+  ): Promise<FacUsers> | HttpException {
     return this.usersService.findOneUser(id);
   }
 
   @Post()
   createUser(
     @Body() newUser: CreateUserDto,
-  ): Promise<FacUsuarios | HttpException> {
+  ): Promise<FacUsers | HttpException> {
     return this.usersService.createUser(newUser);
   }
 
@@ -46,7 +46,7 @@ export class UsersController {
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UpdateUserDto,
-  ): Promise<FacUsuarios | HttpException> {
+  ): Promise<FacUsers | HttpException> {
     return this.usersService.update(id, user);
   }
 }

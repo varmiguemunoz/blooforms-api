@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FacEspacios } from 'src/entities/fac-espacios.entity';
+import { FacEspacios } from 'src/entities/fac-espaces.entity';
 import { FormsService } from './forms.service';
 import { FormsController } from './forms.controller';
 import { DimFormularios } from 'src/entities/dim-formularios.entity';

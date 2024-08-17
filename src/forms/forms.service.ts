@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { DimFormularios } from 'src/entities/dim-formularios.entity';
-import { FacEspacios } from 'src/entities/fac-espacios.entity';
+import { FacEspacios } from 'src/entities/fac-espaces.entity';
 
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
