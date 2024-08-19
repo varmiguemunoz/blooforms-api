@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FormsService } from './forms.service';
-import { FacEspacios } from 'src/entities/fac-espaces.entity';
+import { FacSpaces } from 'src/entities/fac-spaces.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import { DimFormularios } from 'src/entities/dim-formularios.entity';
+import { Events } from 'src/entities/events.entity';
 
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,14 +33,14 @@ export class FormsController {
   @Get('/get-space/:id')
   findOneUser(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<FacEspacios> | HttpException {
+  ): Promise<FacSpaces> | HttpException {
     return this.formService.getOneForm(id);
   }
 
   @Post('/create-space')
   createSpace(
     @Body() newUser: CreateSpaceDto,
-  ): Promise<FacEspacios | HttpException> {
+  ): Promise<FacSpaces | HttpException> {
     return this.formService.createSpace(newUser);
   }
 
@@ -48,7 +48,7 @@ export class FormsController {
   createForm(
     @Param('id', ParseIntPipe) id: number,
     @Body() form: CreateFormDto,
-  ): Promise<void | DimFormularios | FacEspacios> {
+  ): Promise<void | Events | FacSpaces> {
     return this.formService.createForm(form, id);
   }
 
@@ -56,7 +56,7 @@ export class FormsController {
   deleteRegister(
     @Param('id', ParseIntPipe) id: number,
     @Query('id_forms', ParseIntPipe) id_forms: number,
-  ): Promise<DimFormularios | FacEspacios> {
+  ): Promise<Events | FacSpaces> {
     return this.formService.deleteRegister(id, id_forms);
   }
 

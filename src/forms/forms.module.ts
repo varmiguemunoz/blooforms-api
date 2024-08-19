@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FacEspacios } from 'src/entities/fac-espaces.entity';
+import { FacSpaces } from 'src/entities/fac-spaces.entity';
 import { FormsService } from './forms.service';
 import { FormsController } from './forms.controller';
-import { DimFormularios } from 'src/entities/dim-formularios.entity';
+import { Events } from 'src/entities/events.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FacEspacios, DimFormularios])],
+  imports: [TypeOrmModule.forFeature([FacSpaces, Events])],
   providers: [FormsService],
   controllers: [FormsController],
 })

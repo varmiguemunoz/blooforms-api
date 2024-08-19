@@ -2,8 +2,8 @@ import { DataSource, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { DimFormularios } from 'src/entities/dim-formularios.entity';
-import { FacEspacios } from 'src/entities/fac-espaces.entity';
+import { Events } from 'src/entities/events.entity';
+import { FacSpaces } from 'src/entities/fac-spaces.entity';
 
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
@@ -11,10 +11,10 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 @Injectable()
 export class FormsService {
   constructor(
-    @InjectRepository(FacEspacios)
-    private formRepository: Repository<FacEspacios>,
-    @InjectRepository(DimFormularios)
-    private dimFormRepository: Repository<DimFormularios>,
+    @InjectRepository(FacSpaces)
+    private formRepository: Repository<FacSpaces>,
+    @InjectRepository(Events)
+    private dimFormRepository: Repository<Events>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -48,9 +48,7 @@ export class FormsService {
   }
 
   // Create space
-  async createSpace(
-    form: CreateSpaceDto,
-  ): Promise<FacEspacios | HttpException> {
+  async createSpace(form: CreateSpaceDto): Promise<FacSpaces | HttpException> {
     const { titulo } = form;
 
     const newForm = this.formRepository.create({
@@ -58,7 +56,7 @@ export class FormsService {
     });
 
     const spaceSaved = await this.dataSource.transaction(async (manager) => {
-      const space = await manager.save(FacEspacios, newForm);
+      const space = await manager.save(FacSpaces, newForm);
 
       return space;
     });
@@ -69,7 +67,7 @@ export class FormsService {
   async createForm(
     form: CreateFormDto,
     id_space: number,
-  ): Promise<void | DimFormularios | FacEspacios> {
+  ): Promise<void | Events | FacSpaces> {
     const { form_name, form_value } = form;
 
     const register = this.dimFormRepository.create({
@@ -93,7 +91,7 @@ export class FormsService {
   async addFormToSpace(
     id_form: number,
     id_space: number,
-  ): Promise<void | FacEspacios> {
+  ): Promise<void | FacSpaces> {
     const validateSpace = await this.formRepository.findOne({
       where: { id: id_space },
       relations: ['formulario'],
@@ -130,7 +128,7 @@ export class FormsService {
   async deleteRegister(
     id_space: number,
     id_forms: number,
-  ): Promise<DimFormularios | FacEspacios> {
+  ): Promise<Events | FacSpaces> {
     const space = await this.formRepository.findOne({
       where: { id: id_space },
       relations: ['formulario'],
@@ -154,7 +152,7 @@ export class FormsService {
 
   async deleteSpace(id_space: number): Promise<string> {
     await this.dataSource.transaction(async (manager) => {
-      const space = await manager.findOne(FacEspacios, {
+      const space = await manager.findOne(FacSpaces, {
         where: { id: id_space },
         relations: ['formulario'],
       });
@@ -168,10 +166,10 @@ export class FormsService {
 
       if (space.formulario && space.formulario.length > 0) {
         const formIds = space.formulario.map((form) => form.id);
-        await manager.delete(DimFormularios, formIds);
+        await manager.delete(Events, formIds);
       }
 
-      await manager.delete(FacEspacios, { id: id_space });
+      await manager.delete(FacSpaces, { id: id_space });
     });
 
     return 'Espacio eliminado con exito';

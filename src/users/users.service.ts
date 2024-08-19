@@ -20,7 +20,7 @@ export class UsersService {
   //Find all users
   async getUsers() {
     const users = await this.usersRepository.find({
-      relations: ['usuario'],
+      relations: ['usuario', 'role'],
     });
 
     if (!users) {
@@ -37,7 +37,7 @@ export class UsersService {
   async findOneUser(id: number): Promise<FacUsers> {
     const user = await this.usersRepository.findOne({
       where: { id },
-      relations: ['usuario'],
+      relations: ['usuario', 'role'],
     });
 
     if (!user) {
@@ -81,7 +81,7 @@ export class UsersService {
 
   // Create Users
   async createUser(user: CreateUserDto): Promise<FacUsers | HttpException> {
-    const { password, ...userData } = user;
+    const { password, id_role, ...userData } = user;
 
     const emailTaken = await this.usersRepository.findOne({
       where: { usuario: { email: user.email } },
@@ -101,10 +101,7 @@ export class UsersService {
         password: hashPassword,
       },
       role: {
-        id: null,
-      },
-      espacio: {
-        id: null,
+        id: id_role,
       },
     });
 
@@ -126,7 +123,7 @@ export class UsersService {
 
     const userExists = await this.usersRepository.findOne({
       where: { id },
-      relations: ['usuario'],
+      relations: ['usuario', 'role'],
     });
 
     if (!userExists)
@@ -171,7 +168,7 @@ export class UsersService {
 
     return this.usersRepository.findOne({
       where: { id },
-      relations: ['usuario'],
+      relations: ['usuario', 'role'],
     });
   }
 }
