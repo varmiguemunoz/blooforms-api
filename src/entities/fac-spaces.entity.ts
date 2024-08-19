@@ -11,25 +11,25 @@ import {
 
 import { Events } from './events.entity';
 import { Exclude } from 'class-transformer';
-import { DimUsuarios } from './users.entity';
+import { Users } from './users.entity';
 import { SpaceTypes } from './space_types.entity';
 import { Customers } from './customers.entity';
 
 @Entity()
 export class FacSpaces {
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_espacios_pkey1' })
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_spaces_pkey1' })
   id: number;
 
   @Column()
   titulo: string;
 
-  @OneToOne(() => DimUsuarios, { nullable: false, cascade: true })
+  @OneToOne(() => Users, { nullable: false, cascade: true })
   @JoinColumn({
-    name: 'id_usuario',
+    name: 'id_user',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_usuarios_id_usuario_fkey',
+    foreignKeyConstraintName: 'fac_users_id_user_fkey',
   })
-  user: DimUsuarios;
+  user: Users;
 
   @OneToOne(() => SpaceTypes, { nullable: false, cascade: true })
   @JoinColumn({
@@ -41,9 +41,9 @@ export class FacSpaces {
 
   @OneToMany(() => Events, (event) => event.formulario)
   @JoinColumn({
-    name: 'id_formularios',
+    name: 'id_events',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_spaces_id_formularios_fkey',
+    foreignKeyConstraintName: 'fac_spaces_id_events_fkey',
   })
   formulario: Events[];
 

@@ -1,9 +1,9 @@
-import { DimUsuarios } from 'src/entities/users.entity';
+import { Users } from 'src/entities/users.entity';
 
 export class UserEvent {
-  private user: DimUsuarios;
+  private user: Users;
 
-  constructor(user: DimUsuarios) {
+  constructor(user: Users) {
     this.user = user;
   }
 

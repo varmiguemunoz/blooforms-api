@@ -8,11 +8,11 @@ import {
   Unique,
 } from 'typeorm';
 
-@Entity('dim_usuarios')
-@Unique('dim_usuarios_email_key', ['email'])
-export class DimUsuarios {
+@Entity()
+@Unique('dim_users_email_key', ['email'])
+export class Users {
   @Exclude()
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_usuarios_pkey' })
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_users_pkey' })
   id: number;
 
   @Column({ length: 255 })
@@ -39,7 +39,7 @@ export class DimUsuarios {
   @UpdateDateColumn()
   updated_at: Date;
 
-  constructor(partial: Partial<DimUsuarios>) {
+  constructor(partial: Partial<Users>) {
     Object.assign(this, partial);
   }
 }

@@ -1,10 +1,10 @@
 import { UserEvent } from './user.event';
-import { DimUsuarios } from 'src/entities/users.entity';
+import { Users } from 'src/entities/users.entity';
 
 export class UserCreatedEvent extends UserEvent {
   private resetPasswordLink: string;
 
-  constructor(user: DimUsuarios, resetPasswordLink: string) {
+  constructor(user: Users, resetPasswordLink: string) {
     super(user);
     this.resetPasswordLink = resetPasswordLink;
   }

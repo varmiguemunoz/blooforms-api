@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { FacSpaces } from './fac-spaces.entity';
 
-@Entity('dim_customers')
+@Entity()
 @Unique('dim_customers_email_key', ['email'])
 export class Customers {
   @Exclude()

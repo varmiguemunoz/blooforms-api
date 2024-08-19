@@ -51,7 +51,7 @@ CREATE TABLE roles (
   name text unique not null
 );
 
-CREATE TABLE fac_user_roles (
+CREATE TABLE fac_user (
   id bigint primary key generated always as identity,
   user_id bigint references users (id),
   role_id bigint references roles (id),
@@ -90,7 +90,7 @@ CREATE TABLE payment_types (
   name text unique not null
 );
 
-CREATE TABLE payment_statuses (
+CREATE TABLE payment_status (
   id bigint primary key generated always as identity,
   name text unique not null
 );
@@ -109,6 +109,24 @@ CREATE TABLE fac_payments (
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE fac_usuarios`);
+    await queryRunner.query(`
+DROP TABLE IF EXISTS fac_payments;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS fac_user;
+DROP TABLE IF EXISTS fac_spaces;
+DROP TABLE IF EXISTS payment_types;
+DROP TABLE IF EXISTS payment_status;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS space_types;
+DROP TABLE IF EXISTS users;
+
+DROP TYPE IF EXISTS fac_usuarios_id_rol_fkey CASCADE;
+DROP TYPE IF EXISTS fac_users CASCADE;
+DROP TYPE IF EXISTS role CASCADE;
+DROP TYPE IF EXISTS fac_spaces CASCADE;
+DROP TYPE IF EXISTS events CASCADE;
+DROP TYPE IF EXISTS fac_payments CASCADE;
+`);
   }
 }

@@ -21,6 +21,7 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm migration:generate ./src/database/migration/%npm_config_name% -- -d typeorm.config.ts",
     "migration:run": "npm run typeorm migration:run -- -d typeorm.config.ts",
+    "migration:revert": "npm run typeorm migration:revert -- -d typeorm.config.ts",
     "migration:create": "npm run typeorm migration:create ./src/database/migration/%npm_config_name%"
   },
   "dependencies": {

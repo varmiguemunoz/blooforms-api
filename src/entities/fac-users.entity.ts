@@ -7,28 +7,28 @@ import {
   Entity,
 } from 'typeorm';
 
-import { DimUsuarios } from './users.entity';
+import { Users } from './users.entity';
 import { Exclude } from 'class-transformer';
 import { Roles } from './roles.entity';
 
 @Entity()
 export class FacUsers {
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_usuarios_pkey1' })
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'fac_users_pkey1' })
   id: number;
 
-  @OneToOne(() => DimUsuarios, { nullable: false, cascade: true })
+  @OneToOne(() => Users, { nullable: false, cascade: true })
   @JoinColumn({
-    name: 'id_usuario',
+    name: 'id_users',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_usuarios_id_usuario_fkey',
+    foreignKeyConstraintName: 'fac_users_id_usuario_fkey',
   })
-  usuario: DimUsuarios;
+  usuario: Users;
 
   @OneToOne(() => Roles, { nullable: false, cascade: true })
   @JoinColumn({
     name: 'id_rol',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fac_usuarios_id_rol_fkey',
+    foreignKeyConstraintName: 'fac_users_id_rol_fkey',
   })
   role: Roles;
 

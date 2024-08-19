@@ -6,7 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 import { FacUsers } from 'src/entities/fac-users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DimUsuarios } from 'src/entities/users.entity';
+import { Users } from 'src/entities/users.entity';
 
 @Injectable()
 export class UsersService {
@@ -149,11 +149,7 @@ export class UsersService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await manager.update(
-        DimUsuarios,
-        { id: userExists.usuario.id },
-        userData,
-      );
+      await manager.update(Users, { id: userExists.usuario.id }, userData);
 
       const facUser = {
         usuario: { id: userExists.usuario.id },

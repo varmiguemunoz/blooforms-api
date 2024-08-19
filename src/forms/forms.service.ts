@@ -19,7 +19,9 @@ export class FormsService {
   ) {}
 
   async getForms() {
-    const forms = await this.formRepository.find({ relations: ['formulario'] });
+    const forms = await this.formRepository.find({
+      relations: ['formulario', 'space_type', 'customers', 'user'],
+    });
 
     if (!forms) {
       throw new HttpException(
@@ -34,7 +36,7 @@ export class FormsService {
   async getOneForm(id: number) {
     const forms = await this.formRepository.findOne({
       where: { id },
-      relations: ['formulario'],
+      relations: ['formulario', 'space_type', 'customers', 'user'],
     });
 
     if (!forms) {
@@ -49,10 +51,18 @@ export class FormsService {
 
   // Create space
   async createSpace(form: CreateSpaceDto): Promise<FacSpaces | HttpException> {
-    const { titulo } = form;
+    const { titulo, id_space_types, id_user } = form;
 
     const newForm = this.formRepository.create({
       titulo: titulo,
+
+      user: {
+        id: id_user,
+      },
+
+      space_type: {
+        id: id_space_types,
+      },
     });
 
     const spaceSaved = await this.dataSource.transaction(async (manager) => {
@@ -174,4 +184,6 @@ export class FormsService {
 
     return 'Espacio eliminado con exito';
   }
+
+  //01. Service to create customers
 }

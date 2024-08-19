@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { PaymentTypes } from './payment_types.entity';
 import { PaymentStatus } from './payment_status.entity';
-import { DimUsuarios } from './users.entity';
+import { Users } from './users.entity';
 
 @Entity()
 export class FacPayments {
@@ -36,13 +36,13 @@ export class FacPayments {
   })
   payment_status: PaymentStatus;
 
-  @OneToOne(() => DimUsuarios, { cascade: true, nullable: false })
+  @OneToOne(() => Users, { cascade: true, nullable: false })
   @JoinColumn({
     name: 'id_user',
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'fac_payments_id_user_fkey',
   })
-  user: DimUsuarios;
+  user: Users;
 
   @Exclude()
   @CreateDateColumn()
