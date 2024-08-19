@@ -1,4 +1,4 @@
-import { DimUsuarios } from 'src/entities/dim-usuarios.entity';
+import { DimUsuarios } from 'src/entities/users.entity';
 
 export class UserEvent {
   private user: DimUsuarios;

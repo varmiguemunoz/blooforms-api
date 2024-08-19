@@ -1,4 +1,4 @@
-import { DimUsuarios } from 'src/entities/dim-usuarios.entity';
+import { DimUsuarios } from 'src/entities/users.entity';
 import { UserEvent } from './user.event';
 
 export class UserForgotPasswordEvent extends UserEvent {

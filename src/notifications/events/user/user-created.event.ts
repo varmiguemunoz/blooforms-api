@@ -1,5 +1,5 @@
 import { UserEvent } from './user.event';
-import { DimUsuarios } from 'src/entities/dim-usuarios.entity';
+import { DimUsuarios } from 'src/entities/users.entity';
 
 export class UserCreatedEvent extends UserEvent {
   private resetPasswordLink: string;
