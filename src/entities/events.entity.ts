@@ -12,7 +12,6 @@ import { FacSpaces } from './fac-spaces.entity';
 
 @Entity()
 export class Events {
-  @Exclude()
   @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_events_pkey' })
   id: number;
 

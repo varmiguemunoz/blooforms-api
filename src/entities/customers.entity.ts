@@ -14,7 +14,6 @@ import { FacSpaces } from './fac-spaces.entity';
 @Entity()
 @Unique('dim_customers_email_key', ['email'])
 export class Customers {
-  @Exclude()
   @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'dim_customers_pkey' })
   id: number;
 

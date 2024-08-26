@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   Param,
   ParseIntPipe,
@@ -17,6 +18,9 @@ import { FacSpaces } from 'src/entities/fac-spaces.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { Events } from 'src/entities/events.entity';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { Customers } from 'src/entities/customers.entity';
+import { CreateCustomerDto } from './dto/create-customer.dto';
 
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -44,6 +48,8 @@ export class FormsController {
     return this.formService.createSpace(newUser);
   }
 
+  @Public()
+  @HttpCode(200)
   @Post('/create-form/:id')
   createForm(
     @Param('id', ParseIntPipe) id: number,
@@ -52,12 +58,28 @@ export class FormsController {
     return this.formService.createForm(form, id);
   }
 
+  @Post('/create-customer/:id')
+  createCustomer(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() customer: CreateCustomerDto,
+  ): Promise<Customers | FacSpaces> {
+    return this.formService.createCustomers(customer, id);
+  }
+
   @Delete('/delete-register/:id')
   deleteRegister(
     @Param('id', ParseIntPipe) id: number,
     @Query('id_forms', ParseIntPipe) id_forms: number,
   ): Promise<Events | FacSpaces> {
     return this.formService.deleteRegister(id, id_forms);
+  }
+
+  @Delete('/delete-customer/:id')
+  deleteCustomers(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('id_customer', ParseIntPipe) id_customer: number,
+  ): Promise<Customers | FacSpaces> {
+    return this.formService.deleteCustomers(id, id_customer);
   }
 
   @Delete('/delete-space/:id')
