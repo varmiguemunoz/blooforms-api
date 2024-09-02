@@ -114,6 +114,17 @@ export class FormsService {
   ): Promise<Customers | FacSpaces> {
     const { name, email, phone } = customer;
 
+    const existingCustomer = await this.dimCustomersRepository.findOne({
+      where: { email: email },
+    });
+
+    if (existingCustomer) {
+      throw new HttpException(
+        'El cliente con este correo electrónico ya existe',
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const register = this.dimCustomersRepository.create({
       name: name,
       email: email,
@@ -211,25 +222,46 @@ export class FormsService {
     id_space: number,
     id_forms: number,
   ): Promise<Events | FacSpaces> {
-    const space = await this.formRepository.findOne({
-      where: { id: id_space },
-      relations: ['formulario'],
-    });
+    const queryRunner =
+      this.formRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (!space) {
-      throw new HttpException(
-        'No se encontró el espacio.',
-        HttpStatus.NOT_FOUND,
+    try {
+      const space = await queryRunner.manager.findOne(FacSpaces, {
+        where: { id: id_space },
+        relations: ['formulario'],
+      });
+
+      if (!space) {
+        throw new HttpException(
+          'No se encontró el espacio.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const updatedForms = space.formulario.filter(
+        (form) => form.id !== id_forms,
       );
+
+      space.formulario = updatedForms;
+
+      await queryRunner.manager.save(space);
+
+      await queryRunner.manager.delete(Events, { id: id_forms });
+
+      await queryRunner.commitTransaction();
+
+      return space;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        'Error al eliminar el registro: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } finally {
+      await queryRunner.release();
     }
-
-    const updatedForms = space.formulario.filter(
-      (form) => form.id !== id_forms,
-    );
-
-    space.formulario = updatedForms;
-
-    return await this.formRepository.save(space);
   }
 
   //Eliminar clientes ✅
@@ -237,36 +269,56 @@ export class FormsService {
     id_space: number,
     id_customer: number,
   ): Promise<Customers | FacSpaces> {
-    const space = await this.formRepository.findOne({
-      where: { id: id_space },
-      relations: ['customers'],
-    });
+    const queryRunner =
+      this.formRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (!space) {
-      throw new HttpException(
-        'No se encontró el espacio.',
-        HttpStatus.NOT_FOUND,
+    try {
+      // Busca el espacio con los clientes asociados
+      const space = await queryRunner.manager.findOne(FacSpaces, {
+        where: { id: id_space },
+        relations: ['customers'],
+      });
+
+      if (!space) {
+        throw new HttpException(
+          'No se encontró el espacio.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const customer = await queryRunner.manager.findOne(Customers, {
+        where: { id: id_customer },
+      });
+
+      if (!customer) {
+        throw new HttpException(
+          'No se encontró el cliente',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      space.customers = space.customers.filter(
+        (cust) => cust.id !== id_customer,
       );
-    }
 
-    const customer = await this.dimCustomersRepository.findOne({
-      where: { id: id_customer },
-    });
+      await queryRunner.manager.save(space);
 
-    if (!customer) {
+      await queryRunner.manager.delete(Customers, { id: id_customer });
+
+      await queryRunner.commitTransaction();
+
+      return space;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       throw new HttpException(
-        'No se encontró el cliente',
-        HttpStatus.NOT_FOUND,
+        'Error al eliminar el registro: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    } finally {
+      await queryRunner.release();
     }
-
-    const updatedForms = space.customers.filter(
-      (form) => form.id !== id_customer,
-    );
-
-    space.customers = updatedForms;
-
-    return await this.formRepository.save(space);
   }
 
   // Eliminar un espacio ✅
@@ -274,7 +326,7 @@ export class FormsService {
     await this.dataSource.transaction(async (manager) => {
       const space = await manager.findOne(FacSpaces, {
         where: { id: id_space },
-        relations: ['formulario'],
+        relations: ['formulario', 'customers'],
       });
 
       if (!space) {
@@ -287,6 +339,11 @@ export class FormsService {
       if (space.formulario && space.formulario.length > 0) {
         const formIds = space.formulario.map((form) => form.id);
         await manager.delete(Events, formIds);
+      }
+
+      if (space.customers && space.customers.length > 0) {
+        const customerIds = space.customers.map((customer) => customer.id);
+        await manager.delete(Customers, customerIds);
       }
 
       await manager.delete(FacSpaces, { id: id_space });
